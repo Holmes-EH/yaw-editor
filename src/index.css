@@ -2,9 +2,12 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1;
 
+  --white: rgba(255, 255, 255, 0.87);
+  --dark: #242424;
+
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--white);
+  background-color: var(--dark);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,9 +21,30 @@ body {
   place-items: center;
 }
 
+button {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+  background: var(--dark);
+  border: 1px solid var(--white);
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+button:hover {
+  background: var(--white);
+  color: var(--dark);
+}
+
+.yaw-toolbar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --dark: #ffffff;
+    --white: #242424;
   }
 }

@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { ContentBlockType, IContentBlock } from './interfaces'
+import { ContentBlockType, IContentBlock, IContentBlockData } from './interfaces'
 import EditableBlock from './EditableBlock'
 import { HiOutlinePlus, HiXMark } from 'react-icons/hi2'
 import Toolbar from './Toolbar'
@@ -20,8 +20,11 @@ export const Yaw = ({
   const [showToolBar, setShowToolBar] = useState<boolean>(false)
   const [localBlocks, setLocalBlocks] = useState<IContentBlock[]>([...blocks])
 
-  const addNewBlock = (type: ContentBlockType): void => {
-    setLocalBlocks([...localBlocks, { id: generateId(), type, data: { text: 'Start typing..' } }])
+  const addNewBlock = (type: ContentBlockType, data?: IContentBlockData): void => {
+    setLocalBlocks([
+      ...localBlocks,
+      { id: generateId(), type, data: data || { text: 'Start typing..' } },
+    ])
     setShowToolBar(false)
     setBlocks([...localBlocks])
   }

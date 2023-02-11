@@ -1,61 +1,73 @@
 import React, { ReactElement, useState } from 'react'
-import { IContentBlock } from './interfaces'
+
+import { IContentBlock, IContentBlockData } from './interfaces'
+import EditableBlockData from './EditableBlockData'
+import BlockOptions from './BlockOptions'
+
+import { HiXMark } from 'react-icons/hi2'
+import { BiDotsVerticalRounded } from 'react-icons/bi'
 
 const EditableBlock = ({
   styleProps,
   block,
-  updateBlock,
+  deleteBlock,
+  updateBlocks,
   blockIndex,
+  toolBarIconSize,
 }: {
   styleProps: React.CSSProperties
   block: IContentBlock
-  updateBlock: (blockIndex: number, text: string) => void
+  deleteBlock: (blockToDelete: IContentBlock) => void
+  updateBlocks: ({
+    index,
+    text,
+    style,
+    data,
+  }: {
+    index: number
+    text?: string
+    style?: React.CSSProperties
+    data?: IContentBlockData
+  }) => void
   blockIndex: number
+  toolBarIconSize?: string
 }): ReactElement => {
-  const [text, setText] = useState<string>('')
-  const updateState = (event: string | null): void => {
-    if (event !== null && event.length > 0) {
-      setText(event)
-    }
-  }
+  const [showOptions, setShowOptions] = useState<boolean>(false)
 
-  const editableBlockProps: {
-    style: React.CSSProperties
-    contentEditable: boolean
-    suppressContentEditableWarning: boolean
-    onBlur: () => void
-    onInput: (event: React.SyntheticEvent<HTMLElement>) => void
-  } = {
-    style: { ...styleProps, outline: 'none', whiteSpace: 'pre-line' },
-    contentEditable: true,
-    suppressContentEditableWarning: true,
-    onBlur: () => {
-      if (text.length > 0) {
-        updateBlock(blockIndex, text)
-      }
-    },
-    onInput: (e) => {
-      updateState(e.currentTarget.innerText)
-    },
-  }
-
-  switch (block.type) {
-    case 'header':
-      switch (block.data.level) {
-        case 1:
-          return <h1 {...editableBlockProps}>{block.data.text}</h1>
-        case 2:
-          return <h2 {...editableBlockProps}>{block.data.text}</h2>
-        case 3:
-          return <h3 {...editableBlockProps}>{block.data.text}</h3>
-        case 4:
-          return <h4 {...editableBlockProps}>{block.data.text}</h4>
-        default:
-          return <h5 {...editableBlockProps}>{block.data.text}</h5>
-      }
-    default:
-      return <p {...editableBlockProps}>{block.data.text}</p>
-  }
+  return (
+    <div
+      className="blockContainer"
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        position: 'relative',
+      }}
+    >
+      <EditableBlockData
+        styleProps={styleProps}
+        block={block}
+        key={block.id}
+        updateBlocks={updateBlocks}
+        blockIndex={blockIndex}
+      />
+      {showOptions && (
+        <BlockOptions block={block} updateBlocks={updateBlocks} blockIndex={blockIndex} />
+      )}
+      <button
+        onClick={() => {
+          setShowOptions(!showOptions)
+        }}
+      >
+        {showOptions ? (
+          <HiXMark style={{ fontSize: toolBarIconSize }} />
+        ) : (
+          <BiDotsVerticalRounded style={{ fontSize: toolBarIconSize }} />
+        )}
+      </button>
+    </div>
+  )
 }
 
 export default EditableBlock

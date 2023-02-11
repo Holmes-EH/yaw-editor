@@ -29,17 +29,36 @@ export const Yaw = ({
     setBlocks([...localBlocks])
   }
 
-  const updateBlocks = (index: number, text: string): void => {
-    localBlocks[index].data.text = text
-    setLocalBlocks([...localBlocks])
-    setBlocks([...localBlocks])
-  }
-
   const deleteBlock = (blockToDelete: IContentBlock): void => {
     const newLocalBlocks = localBlocks.filter((block) => block.id !== blockToDelete.id)
     setLocalBlocks(newLocalBlocks)
     setBlocks([...localBlocks])
   }
+
+  const updateBlocks = ({
+    index,
+    text,
+    style,
+    data,
+  }: {
+    index: number
+    text?: string
+    style?: React.CSSProperties
+    data?: IContentBlockData
+  }): void => {
+    if (text) {
+      localBlocks[index].data.text = text
+    }
+    if (style) {
+      localBlocks[index].style = style
+    }
+    if (data) {
+      localBlocks[index].data = data
+    }
+    setLocalBlocks([...localBlocks])
+    setBlocks([...localBlocks])
+  }
+
   const generateId = () => {
     return Math.random().toString(36).substring(2, 12)
   }
@@ -54,18 +73,12 @@ export const Yaw = ({
           >
             <EditableBlock
               block={block}
-              key={block.id}
-              updateBlock={updateBlocks}
+              deleteBlock={deleteBlock}
+              updateBlocks={updateBlocks}
               blockIndex={index}
               styleProps={{ width: '100%' }}
+              toolBarIconSize={toolBarIconSize}
             />
-            <button
-              onClick={() => {
-                deleteBlock(block)
-              }}
-            >
-              <HiXMark style={{ fontSize: toolBarIconSize }} />
-            </button>
           </div>
         )
       })}

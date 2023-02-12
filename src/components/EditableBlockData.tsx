@@ -1,5 +1,8 @@
 import React, { ReactElement, useState } from 'react'
+import parse from 'html-react-parser'
 import { IContentBlock } from './interfaces'
+
+import { BiBold, BiItalic, BiUnderline } from 'react-icons/bi'
 
 const EditableBlockData = ({
   styleProps,
@@ -21,6 +24,8 @@ const EditableBlockData = ({
   blockIndex: number
 }): ReactElement => {
   const [text, setText] = useState<string>('')
+  const [styleSelection, setStyleSelection] = useState<boolean>(false)
+
   const updateState = (event: string | null): void => {
     if (event !== null && event.length > 0) {
       setText(event)
@@ -47,6 +52,12 @@ const EditableBlockData = ({
     },
   }
 
+  const textSelected = () => {
+    const selection = document.getSelection()
+    if (selection?.toString().length === 0) return
+    setStyleSelection(true)
+  }
+
   switch (block.type) {
     case 'header':
       switch (block.data.level) {
@@ -62,8 +73,30 @@ const EditableBlockData = ({
           return <h5 {...editableBlockProps}>{block.data.text}</h5>
       }
     default:
-      return <p {...editableBlockProps}>{block.data.text}</p>
+      return (
+        <>
+          <div style={textStylingToolbarStyles}>
+            <BiBold />
+            <BiItalic />
+            <BiUnderline />
+          </div>
+          <p {...editableBlockProps} onMouseUp={textSelected}>
+            {parse(block.data.text || '')}
+          </p>
+        </>
+      )
   }
 }
 
 export default EditableBlockData
+
+const textStylingToolbarStyles: React.CSSProperties = {
+  display: 'flex',
+  fontSize: '1.3em',
+  position: 'absolute',
+  top: '-10px',
+  border: '1px solid',
+  borderRadius: '5px',
+  gap: '5px',
+  padding: '0 2px',
+}

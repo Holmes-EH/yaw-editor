@@ -53,7 +53,12 @@ const EditableBlock = ({
         blockIndex={blockIndex}
       />
       {showOptions && (
-        <BlockOptions block={block} updateBlocks={updateBlocks} blockIndex={blockIndex} />
+        <BlockOptions
+          block={block}
+          updateBlocks={updateBlocks}
+          blockIndex={blockIndex}
+          deleteBlock={deleteBlock}
+        />
       )}
       <button
         onClick={() => {

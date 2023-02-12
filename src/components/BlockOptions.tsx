@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { IContentBlock, IContentBlockData } from './interfaces'
-import { BiAlignLeft, BiAlignMiddle, BiAlignRight, BiAlignJustify, BiHeading } from 'react-icons/bi'
+import CenteringOptions from './options/CenteringOptions'
+import HeaderOptions from './options/HeaderOptions'
+import { BiTrash } from 'react-icons/bi'
 
 const BlockOptions = ({
   block,
   updateBlocks,
   blockIndex,
+  deleteBlock,
 }: {
   block: IContentBlock
   updateBlocks: ({
@@ -20,11 +23,14 @@ const BlockOptions = ({
     data?: IContentBlockData
   }) => void
   blockIndex: number
+  deleteBlock: (blockToDelete: IContentBlock) => void
 }) => {
   const [blockStyle, setBlockStyle] = useState<React.CSSProperties>(
     block.style || { textAlign: 'left' },
   )
   const [blockLevel, setBlockLevel] = useState<number>(block.data.level || 1)
+  const [showCentering, setShowCentering] = useState<boolean>(false)
+  const [showHeaderLevel, setShowHeaderLevel] = useState<boolean>(false)
 
   useEffect(() => {
     updateBlocks({ index: blockIndex, style: blockStyle })
@@ -36,105 +42,35 @@ const BlockOptions = ({
 
   if (block.type === 'paragraph') {
     return (
-      <div
-        className="options-toolbar"
-        style={{
-          display: 'flex',
-          justifyContent: 'flex',
-          flexDirection: 'column',
-          minWidth: 'fit-content',
-          position: 'absolute',
-          right: '40px',
-          padding: '5px',
-          background: 'var(--dark)',
-          border: '1px solid var(--white)',
-          borderRadius: '5px',
-          zIndex: '100',
-        }}
-      >
+      <div className="options-toolbar" style={containerStyles}>
         <div
-          className={`option-element ${block.style?.textAlign === 'left' ? 'active' : ''}`}
-          onClick={() => setBlockStyle({ textAlign: 'left' })}
+          className={`option-element ${showCentering ? 'active' : ''}`}
+          onClick={() => setShowCentering(!showCentering)}
+          style={{ justifyContent: 'center' }}
         >
-          <BiAlignLeft />
-          Align left
+          Alignment
         </div>
-        <div
-          className={`option-element ${block.style?.textAlign === 'center' ? 'active' : ''}`}
-          onClick={() => setBlockStyle({ textAlign: 'center' })}
-        >
-          <BiAlignMiddle />
-          Center
-        </div>
-        <div
-          className={`option-element ${block.style?.textAlign === 'right' ? 'active' : ''}`}
-          onClick={() => setBlockStyle({ textAlign: 'right' })}
-        >
-          <BiAlignRight />
-          Align right
-        </div>
-        <div
-          className={`option-element ${block.style?.textAlign === 'justify' ? 'active' : ''}`}
-          onClick={() => setBlockStyle({ textAlign: 'justify' })}
-        >
-          <BiAlignJustify />
-          Justify
+        {showCentering && <CenteringOptions block={block} setBlockStyle={setBlockStyle} />}
+        <div className={`option-element delete`} onClick={() => deleteBlock(block)}>
+          <BiTrash /> Delete
         </div>
       </div>
     )
   }
   if (block.type === 'header') {
     return (
-      <div
-        className="options-toolbar"
-        style={{
-          display: 'flex',
-          justifyContent: 'flex',
-          flexDirection: 'column',
-          minWidth: 'fit-content',
-          position: 'absolute',
-          right: '40px',
-          padding: '5px',
-          background: 'var(--dark)',
-          border: '1px solid var(--white)',
-          borderRadius: '5px',
-          zIndex: '100',
-        }}
-      >
+      <div className="options-toolbar" style={containerStyles}>
+        <HeaderOptions block={block} setBlockLevel={setBlockLevel} />
         <div
-          className={`option-element ${block.data?.level === 1 ? 'active' : ''}`}
-          onClick={() => setBlockLevel(1)}
+          className={`option-element ${showCentering ? 'active' : ''}`}
+          onClick={() => setShowCentering(!showCentering)}
+          style={{ justifyContent: 'center' }}
         >
-          <BiHeading />
-          <b>1</b>
+          Alignment
         </div>
-        <div
-          className={`option-element ${block.data?.level === 2 ? 'active' : ''}`}
-          onClick={() => setBlockLevel(2)}
-        >
-          <BiHeading />
-          <b>2</b>
-        </div>
-        <div
-          className={`option-element ${block.data?.level === 3 ? 'active' : ''}`}
-          onClick={() => setBlockLevel(3)}
-        >
-          <BiHeading />
-          <b>3</b>
-        </div>
-        <div
-          className={`option-element ${block.data?.level === 4 ? 'active' : ''}`}
-          onClick={() => setBlockLevel(4)}
-        >
-          <BiHeading />
-          <b>4</b>
-        </div>
-        <div
-          className={`option-element ${block.data?.level === 5 ? 'active' : ''}`}
-          onClick={() => setBlockLevel(5)}
-        >
-          <BiHeading />
-          <b>5</b>
+        {showCentering && <CenteringOptions block={block} setBlockStyle={setBlockStyle} />}
+        <div className={`option-element delete`} onClick={() => deleteBlock(block)}>
+          <BiTrash /> Delete
         </div>
       </div>
     )
@@ -143,3 +79,18 @@ const BlockOptions = ({
   return <div>BlockOptions</div>
 }
 export default BlockOptions
+
+const containerStyles: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'flex',
+  flexDirection: 'column',
+  minWidth: 'fit-content',
+  position: 'absolute',
+  top: 0,
+  right: '40px',
+  padding: '5px',
+  background: 'var(--dark)',
+  border: '1px solid var(--white)',
+  borderRadius: '5px',
+  zIndex: '100',
+}

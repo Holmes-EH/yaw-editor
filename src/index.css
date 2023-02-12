@@ -4,6 +4,7 @@
 
   --white: rgba(255, 255, 255, 0.87);
   --dark: #242424;
+  --delete: #d82f2f;
 
   color-scheme: light dark;
   color: var(--white);
@@ -51,9 +52,11 @@ button:hover,
   border-bottom: 1px solid var(--white);
   gap: 5px;
 }
-
 .option-element:last-child {
   border-bottom: none;
+}
+.option-element.delete {
+  color: var(--delete);
 }
 
 @media (prefers-color-scheme: light) {

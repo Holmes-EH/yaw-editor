@@ -1,4 +1,4 @@
-import { FocusEventHandler, FormEventHandler, ReactHTMLElement } from 'react'
+import React, { FocusEventHandler, FormEventHandler, ReactHTMLElement } from 'react'
 
 export interface IContent {
   time: number
@@ -9,6 +9,7 @@ export interface IContentBlock {
   id: string
   type: ContentBlockType
   data: IContentBlockData
+  style?: React.CSSProperties
 }
 export type ContentBlockType = 'header' | 'paragraph' | 'image' | 'list' | 'quote'
 

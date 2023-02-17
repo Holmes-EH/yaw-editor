@@ -7,12 +7,13 @@ function App() {
       id: 'a-first-id-for-dummy-data',
       type: 'header',
       data: { level: 1, text: 'Welcome to YAW!' },
+      style: { textAlign: 'center' },
     },
     {
       id: 'a-second-id-for-dummy-data',
       type: 'paragraph',
       data: {
-        text: 'You can start by editing the 2 existing blocks, or delete them...\nAnd start adding your own...',
+        text: 'You can start by <u><em><strong>editing</strong></em></u> the <strong>2 existing blocks</strong>, or delete them...\nAnd start adding your own...',
       },
     },
   ])

@@ -37,10 +37,6 @@
   "main": "./dist/yaw-editor.umd.js",
   "module": "./dist/yaw-editor.es.js",
   "types": "./dist/index.d.ts",
-  "dependencies": {
-    "html-react-parser": "^3.0.9",
-    "react-icons": "^4.7.1"
-  },
   "devDependencies": {
     "@types/node": "^18.13.0",
     "@types/react": "^18.0.27",

@@ -4,6 +4,11 @@ import { IContentBlock } from './interfaces'
 
 import { BiBold, BiItalic, BiUnderline } from 'react-icons/bi'
 
+interface ISelectedTextNode {
+  text: string
+  focusNode: Element | null
+}
+
 const EditableBlockData = ({
   styleProps,
   block,
@@ -24,11 +29,14 @@ const EditableBlockData = ({
   blockIndex: number
 }): ReactElement => {
   const [text, setText] = useState<string>('')
-  const [styleSelection, setStyleSelection] = useState<boolean>(false)
+  const [selectedTextNode, setSelectedTextNode] = useState<ISelectedTextNode | null>(null)
+  const [textIsSelected, setTextIsSelected] = useState<boolean>(false)
+  const [styleToolbarPositionX, setStyleToolbarPositionX] = useState(0)
+  const [styleToolbarPositionY, setStyleToolbarPositionY] = useState(0)
 
-  const updateState = (event: string | null): void => {
-    if (event !== null && event.length > 0) {
-      setText(event)
+  const updateState = (text: string | null): void => {
+    if (text !== null && text.length > 0) {
+      setText(text)
     }
   }
 
@@ -48,14 +56,66 @@ const EditableBlockData = ({
       }
     },
     onInput: (e) => {
-      updateState(e.currentTarget.innerText)
+      // TODO: MUST sanitize here
+      updateState(e.currentTarget.innerHTML)
     },
   }
 
-  const textSelected = () => {
+  const textSelected = (e: React.MouseEvent) => {
     const selection = document.getSelection()
-    if (selection?.toString().length === 0) return
-    setStyleSelection(true)
+
+    if (selection === null || selection.toString().length === 0) {
+      setSelectedTextNode(null)
+      setTextIsSelected(false)
+      return
+    }
+    setStyleToolbarPositionX(e.nativeEvent.offsetX)
+    setStyleToolbarPositionY(e.nativeEvent.offsetY - 20)
+    setSelectedTextNode({ text: selection.toString(), focusNode: selection.focusNode as Element })
+    setTextIsSelected(true)
+  }
+
+  const styleText = (type: string) => {
+    const textToTransform = block.data.text
+    if (
+      selectedTextNode === null ||
+      selectedTextNode.focusNode === null ||
+      selectedTextNode.text === null ||
+      textToTransform === undefined
+    ) {
+      return
+    }
+    let blockNewText: string | undefined
+    const parentNode = selectedTextNode.focusNode.parentNode
+    if (parentNode === undefined || parentNode === null) return
+
+    if (parentNode.nodeName !== 'P' && parentNode.nodeName !== 'UL') {
+      const parents: Element[] = []
+      const getParentNodes = (node: Element) => {
+        if (node.parentNode === null) return
+        if (node.parentNode.nodeName !== 'P' && node.parentElement) {
+          parents.push(node.parentElement)
+          getParentNodes(node.parentElement)
+        }
+      }
+      getParentNodes(selectedTextNode.focusNode)
+      const tagRegexp = new RegExp(`</?${type}>`, 'g')
+      blockNewText = textToTransform.replace(
+        parents[parents.length - 1].outerHTML,
+        parents[parents.length - 1].outerHTML.replace(tagRegexp, ''),
+      )
+    }
+    if (parentNode.nodeName === 'P' || parentNode.nodeName === 'UL') {
+      blockNewText = textToTransform.replace(
+        selectedTextNode.text,
+        `<${type}>${selectedTextNode.text}</${type}>`,
+      )
+    }
+
+    if (blockNewText === undefined) return
+    setText(blockNewText)
+    setTextIsSelected(false)
+    updateBlocks({ index: blockIndex, text: blockNewText })
   }
 
   switch (block.type) {
@@ -75,12 +135,17 @@ const EditableBlockData = ({
     default:
       return (
         <>
-          <div style={textStylingToolbarStyles}>
-            <BiBold />
-            <BiItalic />
-            <BiUnderline />
-          </div>
-          <p {...editableBlockProps} onMouseUp={textSelected}>
+          {textIsSelected && (
+            <div
+              className="text-style-toolbar"
+              style={{ left: styleToolbarPositionX, top: styleToolbarPositionY }}
+            >
+              <BiBold onClick={() => styleText('strong')} />
+              <BiItalic onClick={() => styleText('em')} />
+              <BiUnderline onClick={() => styleText('u')} />
+            </div>
+          )}
+          <p {...editableBlockProps} onMouseUp={(e: React.MouseEvent) => textSelected(e)}>
             {parse(block.data.text || '')}
           </p>
         </>
@@ -89,14 +154,3 @@ const EditableBlockData = ({
 }
 
 export default EditableBlockData
-
-const textStylingToolbarStyles: React.CSSProperties = {
-  display: 'flex',
-  fontSize: '1.3em',
-  position: 'absolute',
-  top: '-10px',
-  border: '1px solid',
-  borderRadius: '5px',
-  gap: '5px',
-  padding: '0 2px',
-}

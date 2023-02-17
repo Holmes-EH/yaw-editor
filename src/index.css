@@ -58,6 +58,25 @@ button:hover,
 .option-element.delete {
   color: var(--delete);
 }
+.text-style-toolbar {
+  display: flex;
+  z-index: 1;
+  background-color: var(--dark);
+  font-size: 1.3em;
+  position: absolute;
+  border: 1px solid;
+  border-radius: 5px;
+  gap: 5px;
+  padding: 0 2px;
+}
+.text-style-toolbar > * {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.text-style-toolbar > *:hover {
+  background-color: var(--white);
+  color: var(--dark);
+}
 
 @media (prefers-color-scheme: light) {
   :root {

@@ -89,7 +89,7 @@ const EditableBlockData = ({
     const parentNode = selectedTextNode.focusNode.parentNode
     if (parentNode === undefined || parentNode === null) return
 
-    if (parentNode.nodeName !== 'P' && parentNode.nodeName !== 'UL') {
+    if (parentNode.nodeName !== 'P' && parentNode.nodeName !== 'LI') {
       const parents: Element[] = []
       const getParentNodes = (node: Element) => {
         if (node.parentNode === null) return
@@ -99,13 +99,22 @@ const EditableBlockData = ({
         }
       }
       getParentNodes(selectedTextNode.focusNode)
-      const tagRegexp = new RegExp(`</?${type}>`, 'g')
-      blockNewText = textToTransform.replace(
-        parents[parents.length - 1].outerHTML,
-        parents[parents.length - 1].outerHTML.replace(tagRegexp, ''),
-      )
+      const typeIsInParents =
+        parents.filter((parent) => parent.nodeName.toLowerCase() === type).length > 0
+      if (typeIsInParents) {
+        const tagRegexp = new RegExp(`</?${type}>`, 'g')
+        blockNewText = textToTransform.replace(
+          parents[parents.length - 1].outerHTML,
+          parents[parents.length - 1].outerHTML.replace(tagRegexp, ''),
+        )
+      } else {
+        blockNewText = textToTransform.replace(
+          selectedTextNode.text,
+          `<${type}>${selectedTextNode.text}</${type}>`,
+        )
+      }
     }
-    if (parentNode.nodeName === 'P' || parentNode.nodeName === 'UL') {
+    if (parentNode.nodeName === 'P' || parentNode.nodeName === 'LI') {
       blockNewText = textToTransform.replace(
         selectedTextNode.text,
         `<${type}>${selectedTextNode.text}</${type}>`,

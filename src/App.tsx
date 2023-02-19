@@ -13,7 +13,7 @@ function App() {
       id: 'a-second-id-for-dummy-data',
       type: 'paragraph',
       data: {
-        text: 'You can start by <u><em><strong>editing</strong></em></u> the <strong>2 existing blocks</strong>, or delete them...\nAnd start adding your own...',
+        text: 'You can start by <u><em><strong>editing</strong></em></u> the <strong>2 existing blocks</strong>, or delete them...<br>And start adding your own...',
       },
     },
   ])

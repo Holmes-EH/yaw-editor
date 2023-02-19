@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import parse from 'html-react-parser'
-import { IContentBlock } from './interfaces'
+import { IContentBlock, IContentBlockData } from './interfaces'
 
 import { BiBold, BiItalic, BiUnderline } from 'react-icons/bi'
 
@@ -19,11 +19,11 @@ const EditableBlockData = ({
   block: IContentBlock
   updateBlocks: ({
     index,
-    text,
+    data,
     style,
   }: {
     index: number
-    text?: string
+    data: IContentBlockData
     style?: React.CSSProperties
   }) => void
   blockIndex: number
@@ -51,8 +51,8 @@ const EditableBlockData = ({
     contentEditable: true,
     suppressContentEditableWarning: true,
     onBlur: () => {
-      if (text.length > 0) {
-        updateBlocks({ index: blockIndex, text })
+      if (text.length) {
+        updateBlocks({ index: blockIndex, data: { ...block.data, text } })
       }
     },
     onInput: (e) => {
@@ -124,7 +124,7 @@ const EditableBlockData = ({
     if (blockNewText === undefined) return
     setText(blockNewText)
     setTextIsSelected(false)
-    updateBlocks({ index: blockIndex, text: blockNewText })
+    updateBlocks({ index: blockIndex, data: { ...block.data, text: blockNewText } })
   }
 
   switch (block.type) {

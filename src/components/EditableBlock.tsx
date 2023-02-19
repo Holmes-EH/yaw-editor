@@ -20,12 +20,10 @@ const EditableBlock = ({
   deleteBlock: (blockToDelete: IContentBlock) => void
   updateBlocks: ({
     index,
-    text,
     style,
     data,
   }: {
     index: number
-    text?: string
     style?: React.CSSProperties
     data?: IContentBlockData
   }) => void

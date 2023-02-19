@@ -37,18 +37,13 @@ export const Yaw = ({
 
   const updateBlocks = ({
     index,
-    text,
     style,
     data,
   }: {
     index: number
-    text?: string
     style?: React.CSSProperties
     data?: IContentBlockData
   }): void => {
-    if (text) {
-      localBlocks[index].data.text = text
-    }
     if (style) {
       localBlocks[index].style = style
     }
@@ -62,6 +57,7 @@ export const Yaw = ({
   const generateId = () => {
     return Math.random().toString(36).substring(2, 12)
   }
+
   return (
     <div style={{ ...style }} className={className}>
       {localBlocks.map((block, index) => {

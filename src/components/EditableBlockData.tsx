@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import parse from 'html-react-parser'
+import DOMPurify from 'isomorphic-dompurify'
 import { IContentBlock, IContentBlockData } from './interfaces'
 
 import { BiBold, BiItalic, BiUnderline } from 'react-icons/bi'
@@ -29,62 +29,75 @@ const EditableBlockData = ({
   blockIndex: number
 }): ReactElement => {
   const [text, setText] = useState<string>('')
+  const [isEdited, setIsEdited] = useState(false)
   const [selectedTextNode, setSelectedTextNode] = useState<ISelectedTextNode | null>(null)
   const [textIsSelected, setTextIsSelected] = useState<boolean>(false)
-  const [styleToolbarPositionX, setStyleToolbarPositionX] = useState(0)
-  const [styleToolbarPositionY, setStyleToolbarPositionY] = useState(0)
-
-  const updateState = (text: string | null): void => {
-    if (text !== null && text.length > 0) {
-      setText(text)
-    }
-  }
 
   const editableBlockProps: {
     style: React.CSSProperties
     contentEditable: boolean
     suppressContentEditableWarning: boolean
+    onKeyDown: (event: React.KeyboardEvent) => void
     onBlur: () => void
     onInput: (event: React.SyntheticEvent<HTMLElement>) => void
   } = {
-    style: { ...styleProps, outline: 'none', whiteSpace: 'pre-line', ...block.style },
+    style: {
+      ...styleProps,
+      outline: 'none',
+      ...block.style,
+    },
     contentEditable: true,
     suppressContentEditableWarning: true,
+    onKeyDown: (e) => {
+      if (!isEdited) {
+        setIsEdited(true)
+      }
+      if (e.key === 'Enter') {
+        // execCommand has been flagged as obsolete for a while. Consensus seems to be that it will still be supported for a while. Must keep an eye on the evolution...
+        document.execCommand('insertLineBreak')
+        e.preventDefault()
+        // A potential alternative..
+        // const position = document.getSelection()?.getRangeAt(0)
+        // position?.insertNode(document.createElement('br'))
+        // document.getSelection()?.collapseToEnd()
+        // setText(e.currentTarget.innerHTML)
+      }
+    },
     onBlur: () => {
       if (text.length) {
         updateBlocks({ index: blockIndex, data: { ...block.data, text } })
       }
     },
     onInput: (e) => {
-      // TODO: MUST sanitize here
-      updateState(e.currentTarget.innerHTML)
+      const sanitized = DOMPurify.sanitize(e.currentTarget.innerHTML, {
+        USE_PROFILES: { html: true },
+        ALLOWED_TAGS: ['strong', 'em', 'u', 'br'],
+        FORBID_TAGS: ['div'],
+      })
+      setText(sanitized)
     },
   }
 
-  const textSelected = (e: React.MouseEvent) => {
+  const textSelected = () => {
     const selection = document.getSelection()
 
-    if (selection === null || selection.toString().length === 0) {
+    if (selection === null || selection.isCollapsed) {
       setSelectedTextNode(null)
       setTextIsSelected(false)
       return
     }
-    setStyleToolbarPositionX(e.nativeEvent.offsetX)
-    setStyleToolbarPositionY(e.nativeEvent.offsetY - 20)
     setSelectedTextNode({ text: selection.toString(), focusNode: selection.focusNode as Element })
     setTextIsSelected(true)
   }
 
   const styleText = (type: string) => {
-    const textToTransform = block.data.text
     if (
       selectedTextNode === null ||
       selectedTextNode.focusNode === null ||
-      selectedTextNode.text === null ||
-      textToTransform === undefined
-    ) {
+      selectedTextNode.text === null
+    )
       return
-    }
+
     let blockNewText: string | undefined
     const parentNode = selectedTextNode.focusNode.parentNode
     if (parentNode === undefined || parentNode === null) return
@@ -103,19 +116,19 @@ const EditableBlockData = ({
         parents.filter((parent) => parent.nodeName.toLowerCase() === type).length > 0
       if (typeIsInParents) {
         const tagRegexp = new RegExp(`</?${type}>`, 'g')
-        blockNewText = textToTransform.replace(
+        blockNewText = text.replace(
           parents[parents.length - 1].outerHTML,
           parents[parents.length - 1].outerHTML.replace(tagRegexp, ''),
         )
       } else {
-        blockNewText = textToTransform.replace(
+        blockNewText = text.replace(
           selectedTextNode.text,
           `<${type}>${selectedTextNode.text}</${type}>`,
         )
       }
     }
     if (parentNode.nodeName === 'P' || parentNode.nodeName === 'LI') {
-      blockNewText = textToTransform.replace(
+      blockNewText = text.replace(
         selectedTextNode.text,
         `<${type}>${selectedTextNode.text}</${type}>`,
       )
@@ -145,18 +158,18 @@ const EditableBlockData = ({
       return (
         <>
           {textIsSelected && (
-            <div
-              className="text-style-toolbar"
-              style={{ left: styleToolbarPositionX, top: styleToolbarPositionY }}
-            >
+            <div className="text-style-toolbar" style={{ left: '0%', top: '-15px' }}>
               <BiBold onClick={() => styleText('strong')} />
               <BiItalic onClick={() => styleText('em')} />
               <BiUnderline onClick={() => styleText('u')} />
             </div>
           )}
-          <p {...editableBlockProps} onMouseUp={(e: React.MouseEvent) => textSelected(e)}>
-            {parse(block.data.text || '')}
-          </p>
+          <p
+            {...editableBlockProps}
+            onSelect={textSelected}
+            dangerouslySetInnerHTML={{ __html: block.data.text || '' }}
+            onChange={(e) => setText(e.currentTarget.innerHTML)}
+          ></p>
         </>
       )
   }

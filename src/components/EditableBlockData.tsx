@@ -91,10 +91,12 @@ const EditableBlockData = ({
   }
 
   const styleText = (type: string) => {
+    const textToTransform = block.data.text
     if (
       selectedTextNode === null ||
       selectedTextNode.focusNode === null ||
-      selectedTextNode.text === null
+      selectedTextNode.text === null ||
+      textToTransform === undefined
     )
       return
 
@@ -116,19 +118,19 @@ const EditableBlockData = ({
         parents.filter((parent) => parent.nodeName.toLowerCase() === type).length > 0
       if (typeIsInParents) {
         const tagRegexp = new RegExp(`</?${type}>`, 'g')
-        blockNewText = text.replace(
+        blockNewText = textToTransform.replace(
           parents[parents.length - 1].outerHTML,
           parents[parents.length - 1].outerHTML.replace(tagRegexp, ''),
         )
       } else {
-        blockNewText = text.replace(
+        blockNewText = textToTransform.replace(
           selectedTextNode.text,
           `<${type}>${selectedTextNode.text}</${type}>`,
         )
       }
     }
     if (parentNode.nodeName === 'P' || parentNode.nodeName === 'LI') {
-      blockNewText = text.replace(
+      blockNewText = textToTransform.replace(
         selectedTextNode.text,
         `<${type}>${selectedTextNode.text}</${type}>`,
       )

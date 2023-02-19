@@ -13,10 +13,27 @@ function App() {
       id: 'a-second-id-for-dummy-data',
       type: 'paragraph',
       data: {
-        text: 'You can start by <u><em><strong>editing</strong></em></u> the <strong>2 existing blocks</strong>, or delete them...<br>And start adding your own...',
+        text: 'You can start by <u><em><strong>editing</strong></em></u> the <strong>3 existing blocks</strong>, or delete them...<br>And start adding your own...<br>With a new line...<br>With <strong>bold</strong>, <em>italic</em> or <u>underlined</u> text.. Maybe even <strong><em><u>all three</u></em></strong> at the same time ?',
       },
     },
+    {
+      id: 'a-third-id-for-dummy-data',
+      type: 'paragraph',
+      data: {
+        text: 'You could also add a paragraph and center the text...',
+      },
+      style: { textAlign: 'center' },
+    },
+    {
+      id: 'a-forth-id-for-dummy-data',
+      type: 'paragraph',
+      data: {
+        text: 'With text <strong>aligned to the right</strong>... And checkout what you can do by clicking the block options ->',
+      },
+      style: { textAlign: 'right' },
+    },
   ])
+
   return (
     <div style={{ padding: '0 5em' }}>
       <h1>Yaw Editor</h1>

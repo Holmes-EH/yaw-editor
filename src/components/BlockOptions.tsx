@@ -3,12 +3,14 @@ import { IContentBlock, IContentBlockData } from './interfaces'
 import CenteringOptions from './options/CenteringOptions'
 import HeaderOptions from './options/HeaderOptions'
 import { BiTrash } from 'react-icons/bi'
+import OrderOptions from './options/OrderOptions'
 
 const BlockOptions = ({
   block,
   updateBlocks,
   blockIndex,
   deleteBlock,
+  moveBlock,
 }: {
   block: IContentBlock
   updateBlocks: ({
@@ -24,21 +26,21 @@ const BlockOptions = ({
   }) => void
   blockIndex: number
   deleteBlock: (blockToDelete: IContentBlock) => void
+  moveBlock: ({ direction, blockIndex }: { direction: 'UP' | 'DOWN'; blockIndex: number }) => void
 }) => {
   const [blockStyle, setBlockStyle] = useState<React.CSSProperties>(
     block.style || { textAlign: 'left' },
   )
-  const [blockLevel, setBlockLevel] = useState<number>(block.data.level || 1)
+  const [headerBlockLevel, setHeaderBlockLevel] = useState<number>(block.data.level || 1)
   const [showCentering, setShowCentering] = useState<boolean>(false)
-  const [showHeaderLevel, setShowHeaderLevel] = useState<boolean>(false)
 
   useEffect(() => {
     updateBlocks({ index: blockIndex, style: blockStyle })
   }, [blockStyle])
 
   useEffect(() => {
-    updateBlocks({ index: blockIndex, data: { ...block.data, level: blockLevel } })
-  }, [blockLevel])
+    updateBlocks({ index: blockIndex, data: { ...block.data, level: headerBlockLevel } })
+  }, [headerBlockLevel])
 
   if (block.type === 'paragraph') {
     return (
@@ -51,6 +53,7 @@ const BlockOptions = ({
           Alignment
         </div>
         {showCentering && <CenteringOptions block={block} setBlockStyle={setBlockStyle} />}
+        <OrderOptions blockIndex={blockIndex} moveBlock={moveBlock} />
         <div className={`option-element delete`} onClick={() => deleteBlock(block)}>
           <BiTrash /> Delete
         </div>
@@ -60,7 +63,7 @@ const BlockOptions = ({
   if (block.type === 'header') {
     return (
       <div className="options-toolbar" style={containerStyles}>
-        <HeaderOptions block={block} setBlockLevel={setBlockLevel} />
+        <HeaderOptions block={block} setHeaderBlockLevel={setHeaderBlockLevel} />
         <div
           className={`option-element ${showCentering ? 'active' : ''}`}
           onClick={() => setShowCentering(!showCentering)}
@@ -69,6 +72,8 @@ const BlockOptions = ({
           Alignment
         </div>
         {showCentering && <CenteringOptions block={block} setBlockStyle={setBlockStyle} />}
+        <OrderOptions blockIndex={blockIndex} moveBlock={moveBlock} />
+
         <div className={`option-element delete`} onClick={() => deleteBlock(block)}>
           <BiTrash /> Delete
         </div>

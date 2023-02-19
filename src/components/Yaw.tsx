@@ -54,6 +54,28 @@ export const Yaw = ({
     setBlocks([...localBlocks])
   }
 
+  const moveBlock = ({
+    direction,
+    blockIndex,
+  }: {
+    direction: 'UP' | 'DOWN'
+    blockIndex: number
+  }) => {
+    if (blockIndex === 0 && direction === 'UP') return
+    if (blockIndex === blocks.length - 1 && direction === 'DOWN') return
+    const blockToMove = blocks[blockIndex]
+    const newBlocksOrder = [...blocks]
+    newBlocksOrder.splice(blockIndex, 1)
+    if (direction === 'UP') {
+      newBlocksOrder.splice(blockIndex - 1, 0, blockToMove)
+    }
+    if (direction === 'DOWN') {
+      newBlocksOrder.splice(blockIndex + 1, 0, blockToMove)
+    }
+    setLocalBlocks(newBlocksOrder)
+    setBlocks(newBlocksOrder)
+  }
+
   const generateId = () => {
     return Math.random().toString(36).substring(2, 12)
   }
@@ -71,6 +93,7 @@ export const Yaw = ({
               block={block}
               deleteBlock={deleteBlock}
               updateBlocks={updateBlocks}
+              moveBlock={moveBlock}
               blockIndex={index}
               styleProps={{ width: '100%' }}
               toolBarIconSize={toolBarIconSize}

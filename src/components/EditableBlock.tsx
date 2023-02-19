@@ -12,6 +12,7 @@ const EditableBlock = ({
   block,
   deleteBlock,
   updateBlocks,
+  moveBlock,
   blockIndex,
   toolBarIconSize,
 }: {
@@ -27,6 +28,7 @@ const EditableBlock = ({
     style?: React.CSSProperties
     data?: IContentBlockData
   }) => void
+  moveBlock: ({ direction, blockIndex }: { direction: 'UP' | 'DOWN'; blockIndex: number }) => void
   blockIndex: number
   toolBarIconSize?: string
 }): ReactElement => {
@@ -56,12 +58,14 @@ const EditableBlock = ({
           updateBlocks={updateBlocks}
           blockIndex={blockIndex}
           deleteBlock={deleteBlock}
+          moveBlock={moveBlock}
         />
       )}
       <button
         onClick={() => {
           setShowOptions(!showOptions)
         }}
+        style={{ border: 'none' }}
       >
         {showOptions ? (
           <HiXMark style={{ fontSize: toolBarIconSize }} />

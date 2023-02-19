@@ -4,16 +4,16 @@ import { IContentBlock } from '../interfaces'
 
 const HeaderOptions = ({
   block,
-  setBlockLevel,
+  setHeaderBlockLevel,
 }: {
   block: IContentBlock
-  setBlockLevel: (level: number) => void
+  setHeaderBlockLevel: (level: number) => void
 }) => {
   return (
     <>
       <div
         className={`option-element ${block.data?.level === 1 ? 'active' : ''}`}
-        onClick={() => setBlockLevel(1)}
+        onClick={() => setHeaderBlockLevel(1)}
         style={{ gap: '0px' }}
       >
         <BiHeading />
@@ -21,7 +21,7 @@ const HeaderOptions = ({
       </div>
       <div
         className={`option-element ${block.data?.level === 2 ? 'active' : ''}`}
-        onClick={() => setBlockLevel(2)}
+        onClick={() => setHeaderBlockLevel(2)}
         style={{ gap: 'unset' }}
       >
         <BiHeading />
@@ -29,7 +29,7 @@ const HeaderOptions = ({
       </div>
       <div
         className={`option-element ${block.data?.level === 3 ? 'active' : ''}`}
-        onClick={() => setBlockLevel(3)}
+        onClick={() => setHeaderBlockLevel(3)}
         style={{ gap: 'unset' }}
       >
         <BiHeading />
@@ -37,7 +37,7 @@ const HeaderOptions = ({
       </div>
       <div
         className={`option-element ${block.data?.level === 4 ? 'active' : ''}`}
-        onClick={() => setBlockLevel(4)}
+        onClick={() => setHeaderBlockLevel(4)}
         style={{ gap: 'unset' }}
       >
         <BiHeading />
@@ -45,7 +45,7 @@ const HeaderOptions = ({
       </div>
       <div
         className={`option-element ${block.data?.level === 5 ? 'active' : ''}`}
-        onClick={() => setBlockLevel(5)}
+        onClick={() => setHeaderBlockLevel(5)}
         style={{ gap: 'unset' }}
       >
         <BiHeading />

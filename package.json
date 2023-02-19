@@ -38,7 +38,7 @@
   "module": "./dist/yaw-editor.es.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "html-react-parser": "^3.0.9",
+    "isomorphic-dompurify": "^1.0.0",
     "react-icons": "^4.7.1"
   },
   "devDependencies": {

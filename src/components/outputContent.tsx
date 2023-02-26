@@ -23,7 +23,7 @@ const outputData = (block: IContentBlock) => {
     case 'image':
       return <img key={block.id} src={block.data.url} alt={block.data.alt} />
     case 'list':
-      switch (block.data.style) {
+      switch (block.data.listType) {
         case 'unordered':
           return (
             <ul key={block.id}>

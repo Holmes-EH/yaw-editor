@@ -16,7 +16,7 @@ export type ContentBlockType = 'header' | 'paragraph' | 'image' | 'list' | 'quot
 export interface IContentBlockData {
   text?: string
   level?: number
-  style?: string
+  listType?: 'ordered' | 'unordered'
   items?: IContentBlockDataItem[]
   caption?: string
   url?: string

@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
-import { IContentBlock, IContentBlockData } from './interfaces'
+import { IContentBlock, IContentBlockData, IContentBlockDataItem } from './interfaces'
 
 import { BiBold, BiItalic, BiUnderline } from 'react-icons/bi'
 
@@ -29,6 +29,7 @@ const EditableBlockData = ({
   blockIndex: number
 }): ReactElement => {
   const [text, setText] = useState<string>('')
+  const [listItems, setListItems] = useState<IContentBlockDataItem[] | undefined>(block.data?.items)
   const [isEdited, setIsEdited] = useState(false)
   const [selectedTextNode, setSelectedTextNode] = useState<ISelectedTextNode | null>(null)
   const [textIsSelected, setTextIsSelected] = useState<boolean>(false)
@@ -53,14 +54,17 @@ const EditableBlockData = ({
         setIsEdited(true)
       }
       if (e.key === 'Enter') {
-        // execCommand has been flagged as obsolete for a while. Consensus seems to be that it will still be supported for a while. Must keep an eye on the evolution...
-        document.execCommand('insertLineBreak')
-        e.preventDefault()
-        // A potential alternative..
-        // const position = document.getSelection()?.getRangeAt(0)
-        // position?.insertNode(document.createElement('br'))
-        // document.getSelection()?.collapseToEnd()
-        // setText(e.currentTarget.innerHTML)
+        if (e.shiftKey) {
+          e.preventDefault()
+          // execCommand has been flagged as obsolete for a while. Consensus seems to be that it will still be supported for a while. Must keep an eye on the evolution...
+          document.execCommand('insertLineBreak')
+          // A potential alternative..
+          // const position = document.getSelection()?.getRangeAt(0)
+          // position?.insertNode(document.createElement('br'))
+          // document.getSelection()?.collapseToEnd()
+          // setText(e.currentTarget.innerHTML)
+          return
+        }
       }
     },
     onBlur: () => {
@@ -155,6 +159,46 @@ const EditableBlockData = ({
           return <h4 {...editableBlockProps}>{block.data.text}</h4>
         default:
           return <h5 {...editableBlockProps}>{block.data.text}</h5>
+      }
+    case 'list':
+      switch (block.data.listType) {
+        case 'ordered':
+          return (
+            <>
+              {textIsSelected && (
+                <div className="text-style-toolbar" style={{ left: '0%', top: '-15px' }}>
+                  <BiBold onClick={() => styleText('strong')} />
+                  <BiItalic onClick={() => styleText('em')} />
+                  <BiUnderline onClick={() => styleText('u')} />
+                </div>
+              )}
+              <ol
+                key={block.id}
+                {...editableBlockProps}
+                onSelect={textSelected}
+                onChange={(e) => setText(e.currentTarget.innerHTML)}
+              >
+                {listItems?.map((listItem) => {
+                  return <li key={`li-${block.id}-${listItem.id}`}></li>
+                })}
+              </ol>
+            </>
+          )
+        case 'unordered':
+          return (
+            <ul
+              key={block.id}
+              {...editableBlockProps}
+              onSelect={textSelected}
+              onChange={(e) => setText(e.currentTarget.innerHTML)}
+            >
+              {listItems?.map((listItem) => {
+                return <li key={`li-${block.id}-${listItem.id}`}></li>
+              })}
+            </ul>
+          )
+        default:
+          throw new Error("List block listType must be 'ordered' or 'unordered'")
       }
     default:
       return (
